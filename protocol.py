@@ -13,7 +13,6 @@ class RadioProtocol:
         radio.send_bytes("" + str(self.addr) + "|" + str(len(msg)) + "|" + str(cliAdd) + "|" + self.encrypt(msg) + "|" + str(self.calculateChecksum(msg)))
 
     def sendByRadio(self, message, addrDest):
-        self.queue.append(message)
         messageToSend = ""
         i = 0
         arr = str(message).replace("b'", "")[:-1].split("\\n")
@@ -31,7 +30,6 @@ class RadioProtocol:
         incMessage = radio.receive_bytes()
         if incMessage != None :
             tabRes = incMessage.format(1).split("|")
-            print(tabRes)
             if len(tabRes) != 5 :
                 return -1
             data = dict()
@@ -43,23 +41,17 @@ class RadioProtocol:
                 data['message'] = self.decrypt(tabRes[3])
                 if self.verifyCheckSum(data['receivedCheckSum'], self.calculateChecksum(data['message'])):
                     if data['message'] == MESSAGE_SUCCESS :
-                        if len(self.queue) > 0 :
-                            self.queue.pop(0)
-                            return "REMOVE ELEM"
-                        else: 
-                            return "EMPTY"
+                        print("ACK")
+                        return 1
                     elif data['message'] == MESSAGE_ERROR :
-                        if len(self.queue) > 0 :
-                            self.sendByRadio(self.queue[0], data['addrInc'])
-                            return "RESENDED ELEM"
-                        else :
-                            return "EMPTY"
+                        print("NACK")
+                        return 2
                     else :
                         self.sendHelper(data['addrInc'], MESSAGE_SUCCESS)
                         return data['message']
                 else :
                     self.sendHelper(data['addrInc'], MESSAGE_ERROR)
-                    return "RETRYING"
+                    return 3
         return 0
 
     def encrypt(self, msg):

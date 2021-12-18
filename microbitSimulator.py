@@ -21,10 +21,8 @@ radio.on()
 '''
  * main program
 '''
-while True: # Ptet print la queue pour être sur que is ok ?
+while True:
     msgInfo = radioProtocol.receiveByRadio()
-    if msgInfo != None and msgInfo != 0 :
-        print(msgInfo)
     msgUart = uart.read()
     if msgUart != None :
         radioProtocol.sendByRadio(str(msgUart), 1)
