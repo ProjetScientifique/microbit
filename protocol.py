@@ -10,7 +10,7 @@ class RadioProtocol:
         self.queue = queue
 
     def sendHelper(self, cliAdd, msg) :
-        radio.send_bytes("" + str(self.addr) + "|" + str(len(msg)) + "|" + str(cliAdd) + "|" + self.encrypt(msg) + "|" + str(self.calculateChecksum(msg)))
+        radio.send_bytes("" + str(self.addr) + "|||" + str(len(msg)) + "|||" + str(cliAdd) + "|||" + self.encrypt(msg) + "|||" + str(self.calculateChecksum(msg)))
 
     def sendByRadio(self, message, addrDest):
         messageToSend = ""
@@ -30,9 +30,9 @@ class RadioProtocol:
 
     def receiveByRadio(self):# RADIO RECEIVE BYTES ICI !
         incMessage = radio.receive_bytes()
-        print(incMessage)
         if incMessage != None :
-            tabRes = incMessage.format(1).split("|")
+            print(incMessage)
+            tabRes = incMessage.format(1).split("|||")
             if len(tabRes) != 5 :
                 return -1
             data = dict()
