@@ -2,8 +2,6 @@ from microbit import *
 import radio
 import protocol
 
-# MAINTENANT FAUT ADD LE FAAIT QUE CHAQUE FDP DOIT EN PERMANANCE RECEIVE BY RADIO AFIN DE CHECK QUE LE MSG ENVOYE A BIEN ETE RECU !!!!!
-
 
 '''
  * variable for script
@@ -25,4 +23,5 @@ while True:
     msgInfo = radioProtocol.receiveByRadio()
     msgUart = uart.read()
     if msgUart != None :
+        print("ok: " +  str(msgUart))
         radioProtocol.sendByRadio(str(msgUart), 1)

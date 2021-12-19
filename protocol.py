@@ -21,13 +21,16 @@ class RadioProtocol:
                 messageToSend += arr[i]
                 i = i + 1
             else : 
+                print(messageToSend)
                 self.sendHelper(addrDest, messageToSend)
                 messageToSend = ""
         if messageToSend != "" :
+            print(messageToSend)
             self.sendHelper(addrDest, messageToSend)
 
     def receiveByRadio(self):# RADIO RECEIVE BYTES ICI !
         incMessage = radio.receive_bytes()
+        print(incMessage)
         if incMessage != None :
             tabRes = incMessage.format(1).split("|")
             if len(tabRes) != 5 :
