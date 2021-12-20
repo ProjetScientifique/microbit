@@ -21,6 +21,8 @@ radio.on()
 '''
 while True:
     msgInfo = radioProtocol.receiveByRadio()
+    if msgInfo != None and msgInfo != 0 and msgInfo != -1 :
+        uart.write(msgInfo)
     msgUart = uart.read()
     if msgUart != None :
         print("ok: " +  str(msgUart))
