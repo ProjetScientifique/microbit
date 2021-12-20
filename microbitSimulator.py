@@ -21,9 +21,9 @@ radio.on()
 '''
 while True:
     msgInfo = radioProtocol.receiveByRadio()
-    if msgInfo != None and msgInfo != 0 and msgInfo != -1 :
-        uart.write(msgInfo)
     msgUart = uart.read()
+    if msgInfo != None and msgInfo != 0 :
+        print(msgInfo)
+        #uart.write("b'" + msgInfo + "'")  # apparament ça c'est bloquant :)d:)d:d)za:d)
     if msgUart != None :
-        print("ok: " +  str(msgUart))
         radioProtocol.sendByRadio(str(msgUart), 1)
