@@ -1,7 +1,8 @@
 import radio
+import json
 
-MESSAGE_ERROR = "CHECKSUM ERROR"
-MESSAGE_SUCCESS = "DATA RECEIVED"
+MESSAGE_SUCCESS = 'ZAZAEZAEAZEZAEZ'
+MESSAGE_ERROR = 'ZAZAAAAAAAEZAEAZEZAEZ'
 
 class RadioProtocol:
     def __init__(self, address, shiftPattern, queue = []):
@@ -12,7 +13,7 @@ class RadioProtocol:
     def sendHelper(self, cliAdd, msg) :
         radio.send_bytes("" + str(self.addr) + "|||" + str(len(msg)) + "|||" + str(cliAdd) + "|||" + self.encrypt(msg) + "|||" + str(self.calculateChecksum(msg)))
 
-    def sendByRadio(self, message, addrDest): # Boucle for qui envoie un par un ? pck si ça envoie tt d'un coup c'est dla d
+    def sendByRadio(self, message, addrDest):
         self.sendHelper(addrDest, str(message))
 
     def receiveByRadio(self):
@@ -29,22 +30,21 @@ class RadioProtocol:
             if self.addr == int(data['addrDest']):
                 data['message'] = self.decrypt(tabRes[3])
                 if self.verifyCheckSum(data['receivedCheckSum'], self.calculateChecksum(data['message'])):
-                    id = 0
-                    if data['message'] == MESSAGE_SUCCESS :
-                        return {
-                            "id": id,
-                            "status": "ACK"
-                        }
-                    elif data['message'] == MESSAGE_ERROR :
-                        return {
-                            "id": id,
-                            "status": "NACK"
-                        }
+                    if json.loads(data['message'])['status'] == "ACK" :
+                        print('ack')
+                    elif json.loads(data['message'])['status'] == "NACK":
+                        print('nack')
                     else :
-                        self.sendHelper(data['addrInc'], MESSAGE_SUCCESS)
+                        self.sendHelper(data['addrInc'], str({
+                            'status': 'ACK',
+                            'id': json.loads(data['message'])['idMsg']
+                        }))
                         return data['message']
                 else :
-                    self.sendHelper(data['addrInc'], MESSAGE_ERROR)
+                    self.sendHelper(data['addrInc'], str({
+                            'status': 'NACK',
+                            'id': json.loads(data['message'])['idMsg']
+                        }))
                     return -1
         return 0
 
