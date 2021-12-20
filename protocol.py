@@ -12,26 +12,12 @@ class RadioProtocol:
     def sendHelper(self, cliAdd, msg) :
         radio.send_bytes("" + str(self.addr) + "|||" + str(len(msg)) + "|||" + str(cliAdd) + "|||" + self.encrypt(msg) + "|||" + str(self.calculateChecksum(msg)))
 
-    def sendByRadio(self, message, addrDest):
-        messageToSend = ""
-        i = 0
-        arr = str(message).replace("b'", "")[:-1].split("\\n")
-        while i < len(arr) :
-            if len(messageToSend + arr[i]) < 243 :
-                messageToSend += arr[i]
-                i = i + 1
-            else : 
-                print(messageToSend)
-                self.sendHelper(addrDest, messageToSend)
-                messageToSend = ""
-        if messageToSend != "" :
-            print(messageToSend)
-            self.sendHelper(addrDest, messageToSend)
+    def sendByRadio(self, message, addrDest): # Boucle for qui envoie un par un ? pck si ça envoie tt d'un coup c'est dla d
+        self.sendHelper(addrDest, str(message))
 
-    def receiveByRadio(self):# RADIO RECEIVE BYTES ICI !
+    def receiveByRadio(self):
         incMessage = radio.receive_bytes()
         if incMessage != None :
-            print(incMessage)
             tabRes = incMessage.format(1).split("|||")
             if len(tabRes) != 5 :
                 return -1
@@ -43,18 +29,23 @@ class RadioProtocol:
             if self.addr == int(data['addrDest']):
                 data['message'] = self.decrypt(tabRes[3])
                 if self.verifyCheckSum(data['receivedCheckSum'], self.calculateChecksum(data['message'])):
+                    id = 0
                     if data['message'] == MESSAGE_SUCCESS :
-                        print("ACK")
-                        return 1
+                        return {
+                            "id": id,
+                            "status": "ACK"
+                        }
                     elif data['message'] == MESSAGE_ERROR :
-                        print("NACK")
-                        return 2
+                        return {
+                            "id": id,
+                            "status": "NACK"
+                        }
                     else :
                         self.sendHelper(data['addrInc'], MESSAGE_SUCCESS)
                         return data['message']
                 else :
                     self.sendHelper(data['addrInc'], MESSAGE_ERROR)
-                    return 3
+                    return -1
         return 0
 
     def encrypt(self, msg):
