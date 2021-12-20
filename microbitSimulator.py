@@ -20,8 +20,8 @@ radio.on()
  * main program
 '''
 while True:
-    #msgInfo = radioProtocol.receiveByRadio()
+    msgInfo = radioProtocol.receiveByRadio()
     msgUart = uart.read()
     if msgUart != None :
         print("ok: " +  str(msgUart))
-        #uart.write(radioProtocol.sendByRadio(str(msgUart), 1))
+        radioProtocol.sendByRadio(str(msgUart), 1)
