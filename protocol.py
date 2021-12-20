@@ -1,5 +1,4 @@
 import radio
-import json
 
 MESSAGE_SUCCESS = 'ZAZAEZAEAZEZAEZ'
 MESSAGE_ERROR = 'ZAZAAAAAAAEZAEAZEZAEZ'
@@ -30,20 +29,20 @@ class RadioProtocol:
             if self.addr == int(data['addrDest']):
                 data['message'] = self.decrypt(tabRes[3])
                 if self.verifyCheckSum(data['receivedCheckSum'], self.calculateChecksum(data['message'])):
-                    if json.loads(data['message'])['status'] == "ACK" :
+                    if data['message']['status'] == "ACK" :
                         print('ack')
-                    elif json.loads(data['message'])['status'] == "NACK":
+                    elif data['message']['status'] == "NACK":
                         print('nack')
                     else :
                         self.sendHelper(data['addrInc'], str({
                             'status': 'ACK',
-                            'id': json.loads(data['message'])['idMsg']
+                            'id': data['message']['idMsg']
                         }))
                         return data['message']
                 else :
                     self.sendHelper(data['addrInc'], str({
                             'status': 'NACK',
-                            'id': json.loads(data['message'])['idMsg']
+                            'id': data['message']['idMsg']
                         }))
                     return -1
         return 0
