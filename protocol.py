@@ -1,8 +1,5 @@
 import radio
 
-MESSAGE_SUCCESS = 'ZAZAEZAEAZEZAEZ'
-MESSAGE_ERROR = 'ZAZAAAAAAAEZAEAZEZAEZ'
-
 class RadioProtocol:
     def __init__(self, address, shiftPattern, queue = []):
         self.addr = address

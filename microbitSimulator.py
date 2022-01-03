@@ -26,4 +26,4 @@ while True:
         print(msgInfo)
         #uart.write("b'" + msgInfo + "'")  # apparament ça c'est bloquant :)d:)d:d)za:d)
     if msgUart != None :
-        radioProtocol.sendByRadio(str(msgUart), 1)aaa
+        radioProtocol.sendByRadio(str(msgUart), 1)
