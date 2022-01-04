@@ -7,9 +7,7 @@ class RadioProtocol:
         self.queue = queue
 
     def sendHelper(self, cliAdd, msg) :
-        idMsg = msg.split('"idMsg": ')[1].split(",")[0]
-        print(idMsg)
-        radio.send_bytes("" + str(self.addr) + "|||" + str(len(msg)) + "|||" + str(cliAdd) + "|||" + self.encrypt(msg) + "|||" + str(idMsg) + "|||" + str(self.calculateChecksum(msg)))
+        radio.send_bytes("" + str(self.addr) + "|||" + str(len(msg)) + "|||" + str(cliAdd) + "|||" + self.encrypt(msg) + "|||" + str(self.calculateChecksum(msg)))
 
     def sendByRadio(self, message, addrDest):
         self.sendHelper(addrDest, str(message))
@@ -18,16 +16,15 @@ class RadioProtocol:
         incMessage = radio.receive_bytes()
         if incMessage != None :
             tabRes = incMessage.format(1).split("|||")
-            if len(tabRes) != 6 :
+            if len(tabRes) != 5 :
                 return -1
             data = dict()
             data['addrInc'] = tabRes[0]
             data['lenMess'] = tabRes[1]
             data['addrDest'] = tabRes[2]
-            data['receivedCheckSum'] = tabRes[5]
+            data['receivedCheckSum'] = tabRes[4]
             if self.addr == int(data['addrDest']):
                 data['message'] = self.decrypt(tabRes[3])
-                data['idMsg'] = tabRes[4]
                 if self.verifyCheckSum(data['receivedCheckSum'], self.calculateChecksum(data['message'])):
                     if data['message'] != "ACK" and data['message'] != "NACK" :
                         self.sendHelper(data['addrInc'], "ACK")

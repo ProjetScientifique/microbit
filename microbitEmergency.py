@@ -12,7 +12,7 @@ radioProtocol = protocol.RadioProtocol(1,3)
  * init comm
 '''
 uart.init(115200)
-radio.config(group = 2, length = 251)
+radio.config(group = 2, length = 251, queue = 12)
 radio.on()
 
 '''
@@ -21,4 +21,4 @@ radio.on()
 while True:
         newMsg = radioProtocol.receiveByRadio()
         if newMsg != 0 and newMsg != None :
-            uart.write(newMsg)
+            print(newMsg)
