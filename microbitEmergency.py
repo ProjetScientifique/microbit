@@ -20,5 +20,5 @@ radio.on()
 '''
 while True:
         newMsg = radioProtocol.receiveByRadio()
-        if newMsg != 0 :
-            print(newMsg)
+        if newMsg != 0 and newMsg != None :
+            uart.write(newMsg)
