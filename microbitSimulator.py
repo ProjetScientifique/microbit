@@ -7,24 +7,26 @@ import protocol
  * variable for script
 '''
 radioProtocol = protocol.RadioProtocol(2,3)
-msgUart = ""
-elem = ""
+msgReceived = ""
 
 '''
  * init comm
 '''
 uart.init(115200)
-radio.config(group = 2, length = 251, queue = 12)
+radio.config(group = 2, length = 251, queue = 5)
 radio.on()
 
 '''
  * main program
 '''
 while True:
+    ## Checking for potential message sent by Radio, and sending it to the Gateway
     msgInfo = radioProtocol.receiveByRadio()
-    msgUart = uart.read()
     if msgInfo != None and msgInfo != 0 :
-        print(msgInfo)
-        #uart.write("b'" + msgInfo + "'")
-    if msgUart != None :
-        radioProtocol.sendByRadio(str(msgUart), 1)
+        uart.write(msgInfo + "\n")
+    ## Getting data sent by the Gateway
+    if uart.any():
+        msgToSend = uart.read()
+        print(msgToSend)
+        radioProtocol.sendByRadio(str(msgToSend,'utf-8'), 1)
+
