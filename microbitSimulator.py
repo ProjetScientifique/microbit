@@ -13,7 +13,7 @@ radioProtocol = protocol.RadioProtocol(2,3)
  * init comm
 '''
 uart.init(115200)
-radio.config(group = 2, length = 251)
+radio.config(group = 2, length = 251, queue = 12)
 radio.on()
 
 '''

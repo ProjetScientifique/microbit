@@ -26,17 +26,11 @@ class RadioProtocol:
             if self.addr == int(data['addrDest']):
                 data['message'] = self.decrypt(tabRes[3])
                 if self.verifyCheckSum(data['receivedCheckSum'], self.calculateChecksum(data['message'])):
-                    if len(str(data['message']).split("'status':")) == 1:
-                        self.sendHelper(data['addrInc'], str({
-                                'status': 'ACK',
-                                'id': str(data['message']).split('"idMsg": ')[1].split(",")[0]
-                            }))
+                    if data['message'] != "ACK" and data['message'] != "NACK" :
+                        self.sendHelper(data['addrInc'], "ACK")
                     return data['message']
                 else :
-                    self.sendHelper(data['addrInc'], str({
-                            'status': 'NACK',
-                            'id': str(data['message']).split('"idMsg": ')[1].split(",")[0]
-                        }))
+                    self.sendHelper(data['addrInc'], "NACK")
                     return -1
         return 0
 
