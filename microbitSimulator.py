@@ -7,7 +7,8 @@ import protocol
  * variable for script
 '''
 radioProtocol = protocol.RadioProtocol(2,3)
-
+msgUart = ""
+elem = ""
 
 '''
  * init comm
@@ -21,9 +22,13 @@ radio.on()
 '''
 while True:
     msgInfo = radioProtocol.receiveByRadio()
-    msgUart = uart.read()
+    while elem != "\n":
+        elem = uart.read()
+        msgUart += elem
+    print(msgUart)
     if msgInfo != None and msgInfo != 0 :
-        print(msgInfo)
-        #uart.write("b'" + msgInfo + "'")  # apparament ça c'est bloquant :)d:)d:d)za:d)
+        #print(msgInfo)
+        uart.write("b'" + msgInfo + "'")
     if msgUart != None :
         radioProtocol.sendByRadio(str(msgUart), 1)
+        msgUart = ""
