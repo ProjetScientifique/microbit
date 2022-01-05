@@ -27,6 +27,17 @@ while True:
     ## Getting data sent by the Gateway
     if uart.any():
         msgToSend = uart.read()
-        print(msgToSend)
         radioProtocol.sendByRadio(str(msgToSend,'utf-8'), 1)
-
+    '''
+    if uart.any():
+        msgToSend = str(uart.read(),'utf-8')
+        verif = False
+        while verif == False :
+            if uart.any() :
+                msg = str(uart.read(),'utf-8')
+                if msg == "ACK":
+                    radioProtocol.sendByRadio(str(msgToSend,'utf-8'), 1)
+                    verif = True
+                else :
+                    uart.write(msg + "\n")
+    '''
