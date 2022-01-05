@@ -26,18 +26,12 @@ while True:
         uart.write(msgInfo + "\n")
     ## Getting data sent by the Gateway
     if uart.any():
-        msgToSend = uart.read()
-        radioProtocol.sendByRadio(str(msgToSend,'utf-8'), 1)
-    '''
-    if uart.any():
-        msgToSend = str(uart.read(),'utf-8')
-        verif = False
-        while verif == False :
-            if uart.any() :
-                msg = str(uart.read(),'utf-8')
-                if msg == "ACK":
-                    radioProtocol.sendByRadio(str(msgToSend,'utf-8'), 1)
-                    verif = True
-                else :
-                    uart.write(msg + "\n")
-    '''
+        msgToSend = str(uart.read(), 'utf-8')
+        dataSplit = msgToSend.split("|||")
+        if len(dataSplit) != 1 :
+            if str(radioProtocol.calculateChecksum(dataSplit[0])) == dataSplit[1] :
+                radioProtocol.sendByRadio(str(msgToSend,'utf-8'), 1)
+            else :
+                uart.write("NACK\n")
+        else :
+            uart.write("NACK\n")
