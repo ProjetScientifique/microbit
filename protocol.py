@@ -1,51 +1,52 @@
 import radio
 
 class RadioProtocol:
-    def __init__(self, address, shiftPattern, queue = []):
+    def __init__(self, address, shiftPattern, queue = []): 
         self.addr = address
-        self.shiftPattern = shiftPattern
-        self.queue = queue
+        self.shiftPattern = shiftPattern        
 
-    def sendHelper(self, cliAdd, msg) :
-        radio.send_bytes("" + str(self.addr) + "|||" + str(len(msg)) + "|||" + str(cliAdd) + "|||" + self.encrypt(msg) + "|||" + str(self.calculateChecksum(msg)))
+    ## Send data by radio to a microbit with the given address
+    def sendByRadio(self, addrDest, message):
+        radio.send_bytes("" + str(self.addr) + "|||" + str(len(message)) + "|||" + str(addrDest) + "|||" + self.encrypt(message) + "|||" + str(self.calculateChecksum(message)))
 
-    def sendByRadio(self, message, addrDest):
-        self.sendHelper(addrDest, str(message))
-
+    ## Receive data by Radio
     def receiveByRadio(self):
-        incMessage = radio.receive_bytes()
+        incMessage = radio.receive_bytes() # Get bytes
         if incMessage != None :
-            tabRes = incMessage.format(1).split("|||")
-            if len(tabRes) != 5 :
+            tabRes = incMessage.format(1).split("|||") # Split according to the pattern we designed for our protocol
+            if len(tabRes) != 5 : # Check if the split actually returned an array the right len 
                 return -1
-            data = dict()
+            data = dict() # Store data to a dictionnary
             data['addrInc'] = tabRes[0]
             data['lenMess'] = tabRes[1]
             data['addrDest'] = tabRes[2]
             data['receivedCheckSum'] = tabRes[4]
-            if self.addr == int(data['addrDest']):
+            if self.addr == int(data['addrDest']): # If msg was destined to us
                 data['message'] = self.decrypt(tabRes[3])
-                if self.verifyCheckSum(data['receivedCheckSum'], self.calculateChecksum(data['message'])):
-                    if data['message'] != "ACK" and data['message'] != "NACK" :
-                        self.sendHelper(data['addrInc'], "ACK")
+                if self.verifyCheckSum(data['receivedCheckSum'], self.calculateChecksum(data['message'])): # If checksum is ok
+                    if data['message'] != "ACK" and data['message'] != "NACK" : # Makes sure that the message isn't ACK or NACK
+                        self.sendByRadio(data['addrInc'], "ACK")
                     return data['message']
                 else :
-                    self.sendHelper(data['addrInc'], "NACK")
+                    self.sendByRadio(data['addrInc'], "NACK")
                     return -1
         return 0
 
+    ## Used to encrypt data by shifting letters according to the shiftPattern chosen in the __init__ function
     def encrypt(self, msg):
         res = ""
         for i in range(len(msg)):
             res += chr(ord(msg[i])+self.shiftPattern)
         return res
 
+    ## Used to decrypt data by shifting letters according to the shiftPattern chosen in the __init__ function
     def decrypt(self, msg):
         res = ""
         for i in range(len(msg)):
             res += chr(ord(msg[i])-self.shiftPattern)
         return res
 
+    # Calculates checksum for a given message
     def calculateChecksum(self, message):
         nleft = len(message)
         sum = 0
@@ -63,6 +64,7 @@ class RadioProtocol:
 
         return sum
     
+    # Verify a given checksum for a given message
     def verifyCheckSum(self, checkSum, receivedCheckSum):
         if int(checkSum) == receivedCheckSum:
             return True
