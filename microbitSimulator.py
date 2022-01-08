@@ -26,11 +26,11 @@ while True:
         uart.write(msgInfo + "\n")
     ## Getting data sent by the Gateway
     if uart.any(): # Check if data is waiting
-        msgToSend = str(uart.read(), 'utf-8')
-        dataSplit = msgToSend.split("|||") # The message received should look like this : {"latitude":XX.XXXXX, ...}|||<checksum>
-        if len(dataSplit) != 1 : # If the message was correctly splitted
+        msgToSend = str(uart.read(), 'utf-8') # The message received should look like this : {"latitude":XX.XXXXX, ...}|||<checksum>
+        dataSplit = msgToSend.split("|||") # If the message was correctly splitted
+        if len(dataSplit) != 1 : 
             if str(radioProtocol.calculateChecksum(dataSplit[0])) == dataSplit[1] : # If checksums are equal
-                radioProtocol.sendByRadio(str(msgToSend,'utf-8'), 1) # Send msg by Radio, otherwise send NACK to the gateway
+                radioProtocol.sendByRadio(str(dataSplit[0],'utf-8'), 1) # Send msg by Radio, otherwise send NACK to the gateway
             else :
                 uart.write("NACK\n")
         else :
